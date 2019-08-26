@@ -1,4 +1,4 @@
-package com.revolut.currencyconverter.models
+package com.revolut.currencyconverter.model
 
 import com.google.gson.annotations.SerializedName
 

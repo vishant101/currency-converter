@@ -1,6 +1,7 @@
 package com.revolut.currencyconverter.network
 
-import com.revolut.currencyconverter.models.LatestResults
+import com.revolut.currencyconverter.model.LatestResults
+import com.revolut.currencyconverter.utils.BASE_URL
 import io.reactivex.Observable
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -15,7 +16,6 @@ interface DataService {
 
     companion object Factory {
         fun create(): DataService {
-            val BASE_URL = "https://revolut.duckdns.org"
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
