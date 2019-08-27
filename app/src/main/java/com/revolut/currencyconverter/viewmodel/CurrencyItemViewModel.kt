@@ -1,21 +1,24 @@
 package com.revolut.currencyconverter.viewmodel
 
-import android.text.TextWatcher
 import android.view.View
 import androidx.lifecycle.MutableLiveData
+import com.revolut.currencyconverter.interfaces.CurrencyChangeListener
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
 
 class CurrencyItemViewModel:BaseViewModel() {
     private val currency = MutableLiveData<String>()
     private val currencyValue = MutableLiveData<String>()
+    private lateinit var conversionRate: ConversionRate
     private lateinit var onClickListener: View.OnClickListener
-    private lateinit var onTextChangeLister: TextWatcher
+    private lateinit var onTextChangeListener: CurrencyChangeListener
 
-    fun bind(conversionRate: ConversionRate, listener: OnItemClickListener){
+    fun bind(conversionRate: ConversionRate, onClickListener: OnItemClickListener, textChangedListener: CurrencyChangeListener){
         currency.value = conversionRate.currency
         currencyValue.value = conversionRate.rate.toString()
-        onClickListener = View.OnClickListener { listener.onItemClick(conversionRate) }
+        this.conversionRate = conversionRate
+        this.onClickListener = View.OnClickListener { onClickListener.onItemClick(conversionRate) }
+        onTextChangeListener = textChangedListener
     }
 
     fun getCurrency():MutableLiveData<String>{
@@ -30,7 +33,7 @@ class CurrencyItemViewModel:BaseViewModel() {
         return onClickListener
     }
 
-    fun getTextChangedListener(): TextWatcher{
-        return onTextChangeLister
+    fun onTextChanged(s: CharSequence,start: Int,before : Int, count :Int){
+        onTextChangeListener.currecyUpdated(conversionRate, s)
     }
 }

@@ -15,12 +15,17 @@ import io.reactivex.schedulers.Schedulers
 
 import javax.inject.Inject
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.AdapterView
 import android.widget.Toast
+import com.revolut.currencyconverter.interfaces.CurrencyChangeListener
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
+import com.revolut.currencyconverter.interfaces.TextChangedListener
 import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY
 import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY_VALUE
 import java.security.AccessController.getContext
+import kotlin.math.log
 
 class ConversionListViewModel:BaseViewModel(){
     @Inject
@@ -38,9 +43,13 @@ class ConversionListViewModel:BaseViewModel(){
     private lateinit var subscription: Disposable
 
     init{
-        startLoadingRates()
+        // startLoadingRates()
+        loadRates()
         val listener = Listener()
+        val textListener = CurrencyListener()
+        conversionListAdapter.updateTextListener(textListener)
         conversionListAdapter.updatePostListener(listener)
+
     }
 
     fun updateSelectedCurrency(currency: String){
@@ -94,6 +103,13 @@ class ConversionListViewModel:BaseViewModel(){
             updateSelectedCurrency(conversionRate.currency)
         }
     }
+
+    inner class CurrencyListener : CurrencyChangeListener {
+        override fun currecyUpdated(conversionRate: ConversionRate, s: CharSequence) {s
+            Log.i("UPDATE", conversionRate.currency + " : " + s )
+        }
+    }
+
 
     private fun onRetrievePostListSuccess(results: LatestConversionRates){
         val resultsMap: Map<String, Double> = results.rates as Map<String, Double>
