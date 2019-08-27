@@ -1,6 +1,5 @@
 package com.revolut.currencyconverter.viewmodel
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.revolut.currencyconverter.adapters.ConversionListAdapter
@@ -15,17 +14,13 @@ import io.reactivex.schedulers.Schedulers
 
 import javax.inject.Inject
 import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.AdapterView
-import android.widget.Toast
 import com.revolut.currencyconverter.interfaces.CurrencyChangeListener
+import com.revolut.currencyconverter.interfaces.CurrencyFocusListener
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
-import com.revolut.currencyconverter.interfaces.TextChangedListener
 import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY
 import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY_VALUE
-import java.security.AccessController.getContext
-import kotlin.math.log
+import java.math.RoundingMode
+
 
 class ConversionListViewModel:BaseViewModel(){
     @Inject
@@ -37,27 +32,20 @@ class ConversionListViewModel:BaseViewModel(){
     val errorMessage:MutableLiveData<Int> = MutableLiveData()
     val errorClickListener = View.OnClickListener { loadRates() }
 
-    private var selectedCurrency: String = DEFAULT_CURRENCY
-    private var selectedValue: Double = DEFAULT_CURRENCY_VALUE
+    private var selectedConversionRate = ConversionRate(DEFAULT_CURRENCY, DEFAULT_CURRENCY_VALUE)
+    private var focusedCurrency = DEFAULT_CURRENCY
 
     private lateinit var subscription: Disposable
 
     init{
-        // startLoadingRates()
-        loadRates()
+        startLoadingRates()
+        // loadRates()
         val listener = Listener()
         val textListener = CurrencyListener()
+        val focusListener = CurrencyFocusChangeListener()
         conversionListAdapter.updateTextListener(textListener)
-        conversionListAdapter.updatePostListener(listener)
-
-    }
-
-    fun updateSelectedCurrency(currency: String){
-        selectedCurrency = currency
-    }
-
-    fun updateSelectedValue(value: Double){
-        selectedValue = value
+        conversionListAdapter.updateOnClickListener(listener)
+        conversionListAdapter.updateFocusListener(focusListener)
     }
 
     private fun startLoadingRates(){
@@ -78,7 +66,7 @@ class ConversionListViewModel:BaseViewModel(){
 
     private fun loadRates(){
         subscription = Observable.fromCallable { }
-                .concatMap { postApi.getLatest(selectedCurrency) }
+                .concatMap { postApi.getLatest(selectedConversionRate.currency) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { onRetrievePostListStart() }
@@ -98,33 +86,51 @@ class ConversionListViewModel:BaseViewModel(){
         loadingVisibility.value = View.GONE
     }
 
-    inner class Listener : OnItemClickListener {
-        override fun onItemClick(conversionRate: ConversionRate) {
-            updateSelectedCurrency(conversionRate.currency)
-        }
-    }
-
-    inner class CurrencyListener : CurrencyChangeListener {
-        override fun currecyUpdated(conversionRate: ConversionRate, s: CharSequence) {s
-            Log.i("UPDATE", conversionRate.currency + " : " + s )
-        }
-    }
-
-
     private fun onRetrievePostListSuccess(results: LatestConversionRates){
         val resultsMap: Map<String, Double> = results.rates as Map<String, Double>
         val conversionList = mutableListOf<ConversionRate>()
-        val defaultRate = ConversionRate(selectedCurrency, selectedValue)
-        conversionList.add(defaultRate)
+        conversionList.add(selectedConversionRate)
         for ((k, v) in resultsMap) {
-            val conversionRate =  ConversionRate(k,v)
+            val conversionRate =  ConversionRate(k,calculateExchangeValue(v))
             conversionList.add(conversionRate)
         }
 
-        conversionListAdapter.updatePostList(conversionList)
+        conversionListAdapter.updateCurrencyList(conversionList)
+    }
+
+    private fun calculateExchangeValue(value: Double): Double{
+        val exchangeValue = value * selectedConversionRate.rate
+        return exchangeValue.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
     }
 
     private fun onRetrievePostListError(){
         errorMessage.value = com.revolut.currencyconverter.R.string.post_error
+    }
+
+    inner class Listener : OnItemClickListener {
+        override fun onItemClick(conversionRate: ConversionRate) {
+            selectedConversionRate = conversionRate
+        }
+    }
+
+    inner class CurrencyListener : CurrencyChangeListener {
+        override fun currencyUpdated(conversionRate: ConversionRate, s: CharSequence) {
+            if (conversionRate.currency == focusedCurrency) {
+                if (conversionRate.currency == selectedConversionRate.currency) {
+                    selectedConversionRate = ConversionRate(selectedConversionRate.currency, s.toString().toDouble())
+                } else {
+                    selectedConversionRate = conversionRate
+                }
+            }
+        }
+    }
+
+    inner class CurrencyFocusChangeListener : CurrencyFocusListener {
+        override fun currencyFocusChanged(conversionRate: ConversionRate, isFocused: Boolean) {
+            if (isFocused) {
+                focusedCurrency = conversionRate.currency
+                selectedConversionRate = conversionRate
+            }
+        }
     }
 }

@@ -48,14 +48,15 @@
     <EditText
         android:id="@+id/post_body"
         app:mutableText="@{viewModel.getValue()}"
-
+        app:onFocusChangeListener="@{viewModel.onFocusChangeListener}"
+        android:onTextChanged="@{viewModel.onTextChanged}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_title"
         android:layout_centerVertical="true"
-        android:onTextChanged="@{viewModel.onTextChanged}"
+        android:inputType="numberDecimal"
         android:layout_alignParentRight="true"
-        />
+        android:autofillHints="Amount" />
 
 
     </RelativeLayout>

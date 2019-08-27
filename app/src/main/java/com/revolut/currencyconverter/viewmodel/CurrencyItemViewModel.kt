@@ -1,8 +1,10 @@
 package com.revolut.currencyconverter.viewmodel
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.revolut.currencyconverter.interfaces.CurrencyChangeListener
+import com.revolut.currencyconverter.interfaces.CurrencyFocusListener
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
 
@@ -12,12 +14,14 @@ class CurrencyItemViewModel:BaseViewModel() {
     private lateinit var conversionRate: ConversionRate
     private lateinit var onClickListener: View.OnClickListener
     private lateinit var onTextChangeListener: CurrencyChangeListener
+    private lateinit var focusListener: CurrencyFocusListener
 
-    fun bind(conversionRate: ConversionRate, onClickListener: OnItemClickListener, textChangedListener: CurrencyChangeListener){
+    fun bind(conversionRate: ConversionRate, onClickListener: OnItemClickListener, textChangedListener: CurrencyChangeListener, focusListener: CurrencyFocusListener){
         currency.value = conversionRate.currency
         currencyValue.value = conversionRate.rate.toString()
         this.conversionRate = conversionRate
         this.onClickListener = View.OnClickListener { onClickListener.onItemClick(conversionRate) }
+        this.focusListener = focusListener
         onTextChangeListener = textChangedListener
     }
 
@@ -34,6 +38,10 @@ class CurrencyItemViewModel:BaseViewModel() {
     }
 
     fun onTextChanged(s: CharSequence,start: Int,before : Int, count :Int){
-        onTextChangeListener.currecyUpdated(conversionRate, s)
+        onTextChangeListener.currencyUpdated(conversionRate, s)
+    }
+
+    fun onFocusChangeListener(view: View, isFocused: Boolean){
+        focusListener.currencyFocusChanged(conversionRate, isFocused)
     }
 }
