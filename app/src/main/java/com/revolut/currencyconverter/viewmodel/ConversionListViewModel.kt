@@ -100,11 +100,12 @@ class ConversionListViewModel:BaseViewModel(){
 
     private fun calculateExchangeValue(value: Double): Double{
         val exchangeValue = value * selectedConversionRate.rate
-        return exchangeValue.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+        val roundedExchangeValue = exchangeValue.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+        return roundedExchangeValue
     }
 
     private fun onRetrievePostListError(){
-        errorMessage.value = com.revolut.currencyconverter.R.string.post_error
+        // errorMessage.value = com.revolut.currencyconverter.R.string.post_error
     }
 
     inner class Listener : OnItemClickListener {

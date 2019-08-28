@@ -15,9 +15,9 @@ import com.revolut.currencyconverter.viewmodel.CurrencyItemViewModel
 
 class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHolder>() {
     private lateinit var conversionList:List<ConversionRate>
-    private lateinit var listener: OnItemClickListener
-    private lateinit var  textListener: CurrencyChangeListener
-    private lateinit var  focusListener: CurrencyFocusListener
+    private lateinit var onClickListener: OnItemClickListener
+    private lateinit var  onTextChangeListener: CurrencyChangeListener
+    private lateinit var  onFocusChangeListener: CurrencyFocusListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: CurrencyItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.currency_item, parent, false)
@@ -25,37 +25,47 @@ class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHold
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(conversionList[position], listener = listener)
+        holder.bind(conversionList[position], listener = onClickListener)
     }
 
     override fun getItemCount(): Int {
         return if(::conversionList.isInitialized) conversionList.size else 0
     }
 
-    fun updateCurrencyList(conversionLIst:List<ConversionRate>){
-        this.conversionList = conversionLIst
-        notifyDataSetChanged()
+    fun updateCurrencyList(conversionList:List<ConversionRate>){
+        if (itemCount == 0) {
+            this.conversionList = conversionList
+            notifyDataSetChanged()
+        } else {
+            val oldConversionList = this.conversionList
+            this.conversionList = conversionList
+            for ( i in 0 .. conversionList.size){
+                if (conversionList[i] != oldConversionList[i]){
+                    notifyItemChanged(i)
+                }
+            }
+        }
+
     }
 
     fun updateOnClickListener(listener: OnItemClickListener){
-        this.listener = listener
+        this.onClickListener = listener
     }
 
     fun updateTextListener(textListener: CurrencyChangeListener){
-        this.textListener = textListener
+        this.onTextChangeListener = textListener
     }
 
     fun updateFocusListener(focusChangeListener: CurrencyFocusListener){
-        this.focusListener = focusChangeListener
+        this.onFocusChangeListener = focusChangeListener
     }
 
     inner class ViewHolder(private val binding: CurrencyItemBinding):RecyclerView.ViewHolder(binding.root){
         private val viewModel = CurrencyItemViewModel()
 
         fun bind(conversionRate:ConversionRate, listener: OnItemClickListener){
-            viewModel.bind(conversionRate, listener, textListener, focusListener)
+            viewModel.bind(conversionRate, listener, onTextChangeListener, onFocusChangeListener)
             binding.viewModel = viewModel
-
         }
     }
 }

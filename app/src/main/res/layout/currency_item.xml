@@ -55,6 +55,7 @@
         android:layout_below="@id/post_title"
         android:layout_centerVertical="true"
         android:inputType="numberDecimal"
+        android:maxLength="8"
         android:layout_alignParentRight="true"
         android:autofillHints="Amount" />
 
