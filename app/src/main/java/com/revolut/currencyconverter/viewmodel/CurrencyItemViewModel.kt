@@ -16,12 +16,11 @@ class CurrencyItemViewModel:BaseViewModel() {
     private lateinit var onTextChangeListener: CurrencyChangeListener
     private lateinit var focusListener: CurrencyFocusListener
 
-    fun bind(conversionRate: ConversionRate, onClickListener: OnItemClickListener, textChangedListener: CurrencyChangeListener, focusListener: CurrencyFocusListener){
+    fun bind(conversionRate: ConversionRate, onClickListener: OnItemClickListener, textChangedListener: CurrencyChangeListener){
         currency.value = conversionRate.currency
         currencyValue.value = conversionRate.rate.toString()
         this.conversionRate = conversionRate
         this.onClickListener = View.OnClickListener { onClickListener.onItemClick(conversionRate) }
-        this.focusListener = focusListener
         onTextChangeListener = textChangedListener
     }
 
@@ -39,9 +38,5 @@ class CurrencyItemViewModel:BaseViewModel() {
 
     fun onTextChanged(s: CharSequence,start: Int,before : Int, count :Int){
         onTextChangeListener.currencyUpdated(conversionRate, s)
-    }
-
-    fun onFocusChangeListener(view: View, isFocused: Boolean){
-        focusListener.currencyFocusChanged(conversionRate, isFocused)
     }
 }

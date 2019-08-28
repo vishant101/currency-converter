@@ -15,7 +15,6 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import android.os.Handler
 import com.revolut.currencyconverter.interfaces.CurrencyChangeListener
-import com.revolut.currencyconverter.interfaces.CurrencyFocusListener
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY
 import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY_VALUE
@@ -33,7 +32,6 @@ class ConversionListViewModel:BaseViewModel(){
     val errorClickListener = View.OnClickListener { loadRates() }
 
     private var selectedConversionRate = ConversionRate(DEFAULT_CURRENCY, DEFAULT_CURRENCY_VALUE)
-    private var focusedCurrency = DEFAULT_CURRENCY
 
     private lateinit var subscription: Disposable
 
@@ -42,10 +40,8 @@ class ConversionListViewModel:BaseViewModel(){
         // loadRates()
         val listener = Listener()
         val textListener = CurrencyListener()
-        val focusListener = CurrencyFocusChangeListener()
         conversionListAdapter.updateTextListener(textListener)
         conversionListAdapter.updateOnClickListener(listener)
-        conversionListAdapter.updateFocusListener(focusListener)
     }
 
     private fun startLoadingRates(){
@@ -100,8 +96,7 @@ class ConversionListViewModel:BaseViewModel(){
 
     private fun calculateExchangeValue(value: Double): Double{
         val exchangeValue = value * selectedConversionRate.rate
-        val roundedExchangeValue = exchangeValue.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
-        return roundedExchangeValue
+        return exchangeValue.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
     }
 
     private fun onRetrievePostListError(){
@@ -116,21 +111,9 @@ class ConversionListViewModel:BaseViewModel(){
 
     inner class CurrencyListener : CurrencyChangeListener {
         override fun currencyUpdated(conversionRate: ConversionRate, s: CharSequence) {
-            if (conversionRate.currency == focusedCurrency) {
-                if (conversionRate.currency == selectedConversionRate.currency) {
-                    selectedConversionRate = ConversionRate(selectedConversionRate.currency, s.toString().toDouble())
-                } else {
-                    selectedConversionRate = conversionRate
-                }
-            }
-        }
-    }
-
-    inner class CurrencyFocusChangeListener : CurrencyFocusListener {
-        override fun currencyFocusChanged(conversionRate: ConversionRate, isFocused: Boolean) {
-            if (isFocused) {
-                focusedCurrency = conversionRate.currency
-                selectedConversionRate = conversionRate
+            if (conversionRate.currency == selectedConversionRate.currency) {
+                val rate =  if (s.isEmpty()) 0.0 else s.toString().toDouble()
+                selectedConversionRate = ConversionRate(selectedConversionRate.currency, rate)
             }
         }
     }

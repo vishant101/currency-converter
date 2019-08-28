@@ -48,7 +48,7 @@
     <EditText
         android:id="@+id/post_body"
         app:mutableText="@{viewModel.getValue()}"
-        app:onFocusChangeListener="@{viewModel.onFocusChangeListener}"
+        android:onClick="@{viewModel.getPostListener()}"
         android:onTextChanged="@{viewModel.onTextChanged}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
