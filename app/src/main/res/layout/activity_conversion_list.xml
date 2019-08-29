@@ -23,10 +23,15 @@
             android:id="@+id/heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/rates"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            android:layout_marginLeft="@dimen/title_padding_left"
+            android:layout_marginBottom="@dimen/title_padding_vertical"
+            android:layout_marginTop="@dimen/title_padding_vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/title_padding_left" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/conversion_list"

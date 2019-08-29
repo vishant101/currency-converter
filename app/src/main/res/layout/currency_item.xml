@@ -12,53 +12,70 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:onClick="@{viewModel.getPostListener()}"
-        android:paddingBottom="@dimen/row_padding"
+        android:onClick="@{viewModel.getClickListener()}"
         android:paddingLeft="@dimen/activity_margin"
         android:paddingRight="@dimen/activity_margin"
-        android:paddingTop="@dimen/row_padding"
         android:focusable="true">
 
-    <ImageView
-        android:id="@+id/thumbnail"
-        android:layout_width="@dimen/thumbnail"
-        android:layout_height="@dimen/thumbnail"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/row_padding"
-        android:layout_marginEnd="@dimen/row_padding" />
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="@dimen/thumbnail"
+            android:layout_height="@dimen/thumbnail"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="@dimen/row_padding_vertical"
+            android:layout_marginBottom="@dimen/row_padding_vertical"
+            android:layout_marginRight="@dimen/row_padding"
+            android:layout_marginEnd="@dimen/row_padding"
+            android:background="@drawable/img"
+            android:contentDescription="@string/country_flag" />
 
-    <TextView
-        android:id="@+id/post_title"
-        app:mutableText="@{viewModel.getCurrency()}"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/thumbnail"
-        android:fontFamily="sans-serif-medium"
-        android:layout_toEndOf="@id/thumbnail" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/currency"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:paddingTop="@dimen/row_padding_vertical"
+            android:paddingBottom="@dimen/row_padding_vertical"
+            android:layout_toRightOf="@id/thumbnail"
+            android:layout_toEndOf="@id/thumbnail"
+            android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/long_name"
-        android:text="Long Country Name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_title"
-        android:layout_toRightOf="@id/thumbnail"
-         />
+            <TextView
+                android:id="@+id/currency_short"
+                app:mutableText="@{viewModel.getCurrency()}"
+                android:textColor="@color/colorBlackText"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/post_body"
-        app:mutableText="@{viewModel.getValue()}"
-        android:onClick="@{viewModel.getPostListener()}"
-        android:onTextChanged="@{viewModel.onTextChanged}"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_title"
-        android:layout_centerVertical="true"
-        android:inputType="numberDecimal"
-        android:maxLength="8"
-        android:layout_alignParentRight="true"
-        android:autofillHints="Amount" />
+            <TextView
+                android:id="@+id/currency_long"
+                app:mutableText="@{viewModel.getLongCurrency()}"
+                android:textSize="14sp"
+                android:textColor="@color/colorGreyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/currency_short"
+                android:layout_toRightOf="@id/thumbnail"
+                android:layout_toEndOf="@id/thumbnail" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+
+        <EditText
+            android:id="@+id/post_body"
+            app:mutableText="@{viewModel.getValue()}"
+            app:addTextChangedListener="@{viewModel.getTextWatcher()}"
+            android:enabled="@{viewModel.getIsEditTextEnabled()}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:inputType="numberDecimal"
+            android:maxLength="8"
+            android:textColor="@color/colorBlackText"
+            android:textSize="20sp"
+            android:layout_alignParentRight="true"
+            android:autofillHints="Amount"
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 </layout>

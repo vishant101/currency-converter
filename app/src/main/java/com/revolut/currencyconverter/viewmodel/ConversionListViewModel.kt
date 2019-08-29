@@ -1,24 +1,23 @@
 package com.revolut.currencyconverter.viewmodel
 
+import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.revolut.currencyconverter.adapters.ConversionListAdapter
+import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
-
 import com.revolut.currencyconverter.model.LatestConversionRates
 import com.revolut.currencyconverter.network.ConversionApi
+import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY
+import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY_VALUE
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-
-import javax.inject.Inject
-import android.os.Handler
-import com.revolut.currencyconverter.interfaces.CurrencyChangeListener
-import com.revolut.currencyconverter.interfaces.OnItemClickListener
-import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY
-import com.revolut.currencyconverter.utils.DEFAULT_CURRENCY_VALUE
 import java.math.RoundingMode
+import javax.inject.Inject
 
 
 class ConversionListViewModel:BaseViewModel(){
@@ -26,22 +25,20 @@ class ConversionListViewModel:BaseViewModel(){
     lateinit var postApi: ConversionApi
     val conversionListAdapter: ConversionListAdapter = ConversionListAdapter()
 
-
     val loadingVisibility: MutableLiveData<Int> = MutableLiveData()
     val errorMessage:MutableLiveData<Int> = MutableLiveData()
     val errorClickListener = View.OnClickListener { loadRates() }
 
     private var selectedConversionRate = ConversionRate(DEFAULT_CURRENCY, DEFAULT_CURRENCY_VALUE)
-
     private lateinit var subscription: Disposable
 
     init{
         startLoadingRates()
         // loadRates()
         val listener = Listener()
-        val textListener = CurrencyListener()
-        conversionListAdapter.updateTextListener(textListener)
+        val valueWatcher = ValueWatcher()
         conversionListAdapter.updateOnClickListener(listener)
+        conversionListAdapter.updateValueWatcher(valueWatcher)
     }
 
     private fun startLoadingRates(){
@@ -109,12 +106,14 @@ class ConversionListViewModel:BaseViewModel(){
         }
     }
 
-    inner class CurrencyListener : CurrencyChangeListener {
-        override fun currencyUpdated(conversionRate: ConversionRate, s: CharSequence) {
-            if (conversionRate.currency == selectedConversionRate.currency) {
-                val rate =  if (s.isEmpty()) 0.0 else s.toString().toDouble()
-                selectedConversionRate = ConversionRate(selectedConversionRate.currency, rate)
-            }
+
+    inner class ValueWatcher : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        override fun onTextChanged(newValue: CharSequence, p1: Int, p2: Int, p3: Int) {}
+
+        override fun afterTextChanged(newValue: Editable) {
+            val rate =  if (newValue.isEmpty()) 0.0 else newValue.toString().toDouble()
+            selectedConversionRate = ConversionRate(selectedConversionRate.currency, rate)
         }
     }
 }

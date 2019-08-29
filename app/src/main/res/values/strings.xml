@@ -2,5 +2,7 @@
     <string name="app_name">Currency Converter</string>
 
     <string name="retry">Retry</string>
-    <string name="post_error">An error occurred while loading the posts</string>
+    <string name="post_error">An error occurred while loading rates</string>
+    <string name="rates">Rates</string>
+    <string name="country_flag">Country Flag</string>
 </resources>
