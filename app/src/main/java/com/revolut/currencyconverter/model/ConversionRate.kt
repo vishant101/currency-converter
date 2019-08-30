@@ -5,5 +5,6 @@ import androidx.room.Entity
 @Entity
 data class ConversionRate (
     val currency: String,
-    val rate: Double
+    val rate: Float,
+    var value: Float
 )

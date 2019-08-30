@@ -1,7 +1,9 @@
 package com.revolut.currencyconverter.adapters
 
+import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,14 +14,43 @@ import com.revolut.currencyconverter.model.ConversionRate
 import com.revolut.currencyconverter.viewmodel.CurrencyItemViewModel
 
 
-class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHolder>() {
-    private lateinit var conversionList:List<ConversionRate>
+class ConversionListAdapter(private val callback: OnValueChange): RecyclerView.Adapter<ConversionListAdapter.ViewHolder>() {
+    private lateinit var conversionList: List<ConversionRate>
     private lateinit var onClickListener: OnItemClickListener
     private lateinit var  valueWatcher: TextWatcher
 
+    interface OnValueChange {
+        // fun onRateChanged(currencyName: String, value: Double)
+        fun onValueChanged(value: Float)
+         // fun scrollToTop()
+    }
+
+    init {
+        this.valueWatcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(newValue: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun afterTextChanged(newValue: Editable?) {
+                val strValue: String = newValue.toString().trim()
+                var value: Float
+
+                try {
+                    value = strValue.toFloat()
+                } catch (e: Exception) {
+                    value = 0.0F
+                }
+
+                 conversionList[0].value = value
+                 callback.onValueChanged(value)
+            }
+        }
+    }
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding: CurrencyItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.currency_item, parent, false)
-        return ViewHolder(binding)
+
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.currency_item, parent, false)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -39,7 +70,13 @@ class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHold
             this.conversionList = conversionList
             for ( i in 0 .. conversionList.size){
                 if (conversionList[i] != oldConversionList[i]){
-                    notifyItemChanged(i)
+                    if (i == 0){
+                        if ( conversionList[i].currency != oldConversionList[i].currency) {
+                            notifyItemChanged(i)
+                        }
+                    } else {
+                        notifyItemChanged(i)
+                    }
                 }
             }
         }
@@ -53,12 +90,11 @@ class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHold
         this.valueWatcher = valueWatcher
     }
 
-    inner class ViewHolder(private val binding: CurrencyItemBinding):RecyclerView.ViewHolder(binding.root){
-        private val viewModel = CurrencyItemViewModel()
+    inner class ViewHolder(private val view: View):RecyclerView.ViewHolder(view){
+        private val viewModel = CurrencyItemViewModel(view)
 
         fun bind(conversionRate:ConversionRate, position: Int, onItemClickListener: OnItemClickListener, valueWatcher: TextWatcher){
             viewModel.bind(conversionRate, position, onItemClickListener,valueWatcher)
-            binding.viewModel = viewModel
         }
     }
 }

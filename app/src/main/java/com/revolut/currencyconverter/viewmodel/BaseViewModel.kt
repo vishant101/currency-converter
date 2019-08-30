@@ -18,7 +18,6 @@ abstract class BaseViewModel: ViewModel(){
     private fun inject() {
         when (this) {
             is ConversionListViewModel -> injector.inject(this)
-            is CurrencyItemViewModel -> injector.inject(this)
         }
     }
 }

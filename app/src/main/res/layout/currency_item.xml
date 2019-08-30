@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:id="@+id/currency_layout">
     <data>
         <variable
             name="viewModel"
@@ -12,13 +12,12 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:onClick="@{viewModel.getClickListener()}"
         android:paddingLeft="@dimen/activity_margin"
         android:paddingRight="@dimen/activity_margin"
         android:focusable="true">
 
         <ImageView
-            android:id="@+id/thumbnail"
+            android:id="@+id/currency_flag"
             android:layout_width="@dimen/thumbnail"
             android:layout_height="@dimen/thumbnail"
             android:layout_centerVertical="true"
@@ -35,13 +34,12 @@
             android:layout_width="wrap_content"
             android:paddingTop="@dimen/row_padding_vertical"
             android:paddingBottom="@dimen/row_padding_vertical"
-            android:layout_toRightOf="@id/thumbnail"
-            android:layout_toEndOf="@id/thumbnail"
+            android:layout_toRightOf="@id/currency_flag"
+            android:layout_toEndOf="@id/currency_flag"
             android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/currency_short"
-                app:mutableText="@{viewModel.getCurrency()}"
                 android:textColor="@color/colorBlackText"
                 android:textSize="16sp"
                 android:layout_width="wrap_content"
@@ -49,24 +47,20 @@
 
             <TextView
                 android:id="@+id/currency_long"
-                app:mutableText="@{viewModel.getLongCurrency()}"
                 android:textSize="14sp"
                 android:textColor="@color/colorGreyText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/currency_short"
-                android:layout_toRightOf="@id/thumbnail"
-                android:layout_toEndOf="@id/thumbnail" />
+                android:layout_toRightOf="@id/currency_flag"
+                android:layout_toEndOf="@id/currency_flag" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
 
         <EditText
-            android:id="@+id/post_body"
-            app:mutableText="@{viewModel.getValue()}"
-            app:addTextChangedListener="@{viewModel.getTextWatcher()}"
-            android:enabled="@{viewModel.getIsEditTextEnabled()}"
+            android:id="@+id/currency_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
