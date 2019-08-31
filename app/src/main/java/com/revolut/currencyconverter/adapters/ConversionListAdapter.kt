@@ -14,38 +14,10 @@ import com.revolut.currencyconverter.model.ConversionRate
 import com.revolut.currencyconverter.viewmodel.CurrencyItemViewModel
 
 
-class ConversionListAdapter(private val callback: OnValueChange): RecyclerView.Adapter<ConversionListAdapter.ViewHolder>() {
+class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHolder>() {
     private lateinit var conversionList: List<ConversionRate>
     private lateinit var onClickListener: OnItemClickListener
     private lateinit var  valueWatcher: TextWatcher
-
-    interface OnValueChange {
-        // fun onRateChanged(currencyName: String, value: Double)
-        fun onValueChanged(value: Float)
-         // fun scrollToTop()
-    }
-
-    init {
-        this.valueWatcher = object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(newValue: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun afterTextChanged(newValue: Editable?) {
-                val strValue: String = newValue.toString().trim()
-                var value: Float
-
-                try {
-                    value = strValue.toFloat()
-                } catch (e: Exception) {
-                    value = 0.0F
-                }
-
-                 conversionList[0].value = value
-                 callback.onValueChanged(value)
-            }
-        }
-    }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -90,7 +62,7 @@ class ConversionListAdapter(private val callback: OnValueChange): RecyclerView.A
         this.valueWatcher = valueWatcher
     }
 
-    inner class ViewHolder(private val view: View):RecyclerView.ViewHolder(view){
+    inner class ViewHolder(private var view: View):RecyclerView.ViewHolder(view){
         private val viewModel = CurrencyItemViewModel(view)
 
         fun bind(conversionRate:ConversionRate, position: Int, onItemClickListener: OnItemClickListener, valueWatcher: TextWatcher){

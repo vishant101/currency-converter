@@ -11,11 +11,11 @@ import com.revolut.currencyconverter.R
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
 import com.revolut.currencyconverter.utils.DEFAULT_LONG_CURRENCY_PLACEHOLDER
+import com.revolut.currencyconverter.utils.MIPMAP
 import com.revolut.currencyconverter.utils.STRING
 
 
 class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
-
     private val currencyShortName: TextView = this.itemView.findViewById(R.id.currency_short)
     private val currencyLongName: TextView = this.itemView.findViewById(R.id.currency_long)
     private val currencyEditValue: EditText = this.itemView.findViewById(R.id.currency_value)
@@ -63,7 +63,7 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
     private fun updateTextWatcher(valueWatcher: TextWatcher, position: Int) {
         currencyEditValue.isEnabled = position == 0
         currencyEditValue.removeTextChangedListener(valueWatcher)
-        if (position ==0) currencyEditValue.addTextChangedListener(valueWatcher)
+        if (position == 0) currencyEditValue.addTextChangedListener(valueWatcher)
     }
 
     private fun updateOnClickListener(){
@@ -78,7 +78,7 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
         val drawableName = "ic_"+currencyName.substring(0,3).toLowerCase()
 
         currencyFlag = try {
-            resources.getIdentifier(drawableName, "mipmap", packageName)
+            resources.getIdentifier(drawableName, MIPMAP, packageName)
         } catch (e: Exception) { 0 }
 
         if (currencyFlag==0) currencyFlag = R.mipmap.ic_eur
