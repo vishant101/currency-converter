@@ -1,12 +1,9 @@
 package com.revolut.currencyconverter.viewmodel
 
 import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.revolut.currencyconverter.adapters.ConversionListAdapter
-import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
 import com.revolut.currencyconverter.model.LatestConversionRates
 import com.revolut.currencyconverter.network.ConversionApi
@@ -33,14 +30,14 @@ class ConversionListViewModel:BaseViewModel() {
     private var baseCurrency: String = DEFAULT_CURRENCY
     private var baseValue: Float = DEFAULT_CURRENCY_VALUE
 
-    private lateinit var subscription: Disposable
+    private lateinit var dataSubscription: Disposable
+    private lateinit var itemClickSubscription: Disposable
+    private lateinit var valueChangeSubscription: Disposable
 
     init{
         startLoadingRates()
-        val onClickListener = OnClickListener()
-        val valueWatcher = ValueWatcher()
-        conversionListAdapter.updateOnClickListener(onClickListener)
-        conversionListAdapter.updateValueWatcher(valueWatcher)
+        setupItemClick()
+        setupValueChange()
     }
 
     private fun startLoadingRates(){
@@ -56,11 +53,11 @@ class ConversionListViewModel:BaseViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        subscription.dispose()
+        dataSubscription.dispose()
     }
 
     private fun loadRates(){
-        subscription = Observable.fromCallable { }
+        dataSubscription = Observable.fromCallable { }
                 .concatMap { postApi.getLatest(baseCurrency) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -113,22 +110,13 @@ class ConversionListViewModel:BaseViewModel() {
         loadRates()
     }
 
-    inner class OnClickListener : OnItemClickListener {
-        override fun onItemClick(conversionRate: ConversionRate) {
-            updateBase(conversionRate.currency, conversionRate.value)
-            conversionListAdapter.scrollTo.set(0)
-        }
+    private fun setupItemClick() {
+        itemClickSubscription = conversionListAdapter.clickEvent
+            .subscribe { updateBase(it.currency, it.value) }
     }
 
-    inner class ValueWatcher : TextWatcher {
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        override fun onTextChanged(newValue: CharSequence, p1: Int, p2: Int, p3: Int) {}
-
-        override fun afterTextChanged(newValue: Editable) {
-            val rate =  if (newValue.isEmpty()) 0.0F else newValue.toString().toFloat()
-            conversionListAdapter.updateBaseValue(rate)
-            updateBaseValue(rate)
-
-        }
+    private fun setupValueChange() {
+        valueChangeSubscription = conversionListAdapter.valueChangeEvent
+            .subscribe { updateBaseValue(it) }
     }
 }

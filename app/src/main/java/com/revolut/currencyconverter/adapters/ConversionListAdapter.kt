@@ -1,5 +1,6 @@
 package com.revolut.currencyconverter.adapters
 
+import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +13,27 @@ import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
 import com.revolut.currencyconverter.utils.VALUE_CHANGE
 import com.revolut.currencyconverter.viewmodel.CurrencyItemViewModel
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 
 
 class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHolder>() {
     private lateinit var conversionList: List<ConversionRate>
-    private lateinit var onClickListener: OnItemClickListener
-    private lateinit var  valueWatcher: TextWatcher
+    private var onClickListener: OnItemClickListener
+    private var  valueWatcher: TextWatcher
+
+    private val clickSubject = PublishSubject.create<ConversionRate>()
+    private val valueChangeSubject = PublishSubject.create<Float>()
+
+    val clickEvent: Observable<ConversionRate> = clickSubject
+    val valueChangeEvent: Observable<Float> = valueChangeSubject
+
     var scrollTo = ObservableInt()
+
+    init {
+        this.onClickListener = OnClickListener()
+        this.valueWatcher = ValueWatcher()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.currency_item, parent, false)
@@ -56,18 +71,6 @@ class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHold
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun updateOnClickListener(listener: OnItemClickListener){
-        this.onClickListener = listener
-    }
-
-    fun updateValueWatcher(valueWatcher: TextWatcher){
-        this.valueWatcher = valueWatcher
-    }
-
-    fun updateBaseValue(rate: Float) {
-        conversionList[0].value = rate
-    }
-
     inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
         private val viewModel = CurrencyItemViewModel(view)
 
@@ -95,13 +98,26 @@ class ConversionListAdapter: RecyclerView.Adapter<ConversionListAdapter.ViewHold
 
         override fun getChangePayload(oldPosition: Int, newPosition: Int): Any? {
             val payloadSet = mutableSetOf<String>()
-            val oldRate = oldList[oldPosition]
-            val newRate = newList[newPosition]
-
-            if (oldRate.value!=newRate.value)
-                payloadSet.add(VALUE_CHANGE)
-
+            when { oldList[oldPosition].value != newList[newPosition].value -> payloadSet.add(VALUE_CHANGE) }
             return payloadSet
+        }
+    }
+
+    inner class OnClickListener : OnItemClickListener {
+        override fun onItemClick(conversionRate: ConversionRate) {
+            clickSubject.onNext(conversionRate)
+            scrollTo.set(0)
+        }
+    }
+
+    inner class ValueWatcher : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        override fun onTextChanged(newValue: CharSequence, p1: Int, p2: Int, p3: Int) {}
+
+        override fun afterTextChanged(newValue: Editable) {
+            val rate =  if (newValue.isEmpty()) 0.0F else newValue.toString().toFloat()
+            conversionList[0].value = rate
+            valueChangeSubject.onNext(rate)
         }
     }
 }
