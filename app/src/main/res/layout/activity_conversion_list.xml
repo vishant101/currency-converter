@@ -34,12 +34,15 @@
             android:layout_marginStart="@dimen/title_padding_left" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/conversion_list"
+            android:id="@+id/conversionList"
+            app:adapter="@{viewModel.conversionListAdapter}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:adapter="@{viewModel.conversionListAdapter}"
-            app:scrollTo="@{viewModel.conversionListAdapter.scrollTo}"
-            android:descendantFocusability="afterDescendants"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:scrollbars="vertical"
             app:layout_constraintTop_toBottomOf="@id/heading"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

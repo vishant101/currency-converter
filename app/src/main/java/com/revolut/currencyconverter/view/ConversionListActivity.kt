@@ -12,11 +12,13 @@ import com.revolut.currencyconverter.R
 import com.revolut.currencyconverter.databinding.ActivityConversionListBinding
 import com.revolut.currencyconverter.injection.ViewModelFactory
 import com.revolut.currencyconverter.viewmodel.ConversionListViewModel
+import io.reactivex.disposables.Disposable
 
 class ConversionListActivity: AppCompatActivity() {
     private lateinit var binding: ActivityConversionListBinding
     private lateinit var viewModel: ConversionListViewModel
     private var errorSnackbar: Snackbar? = null
+    private lateinit var itemClickSubscription: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -29,6 +31,8 @@ class ConversionListActivity: AppCompatActivity() {
                 errorMessage -> if(errorMessage != null) showError(errorMessage) else hideError()
         })
         binding.viewModel = viewModel
+
+        setupItemClick()
     }
 
     private fun showError(@StringRes errorMessage:Int){
@@ -39,5 +43,14 @@ class ConversionListActivity: AppCompatActivity() {
 
     private fun hideError(){
         errorSnackbar?.dismiss()
+    }
+
+    private fun scrollToTop(){
+        binding.conversionList.scrollToPosition(0)
+    }
+
+    private fun setupItemClick() {
+        itemClickSubscription = viewModel.conversionListAdapter.clickEvent
+            .subscribe { scrollToTop() }
     }
 }
