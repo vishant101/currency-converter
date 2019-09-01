@@ -23,7 +23,7 @@ fun setMutableVisibility(view: View,  visibility: MutableLiveData<Int>?) {
     }
 }
 
-@BindingAdapter("bind:scrollTo")
+@BindingAdapter("scrollTo")
 fun scrollTo(recyclerView: RecyclerView, position: Int) {
     recyclerView.scrollToPosition(position)
 }
