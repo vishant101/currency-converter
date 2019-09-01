@@ -37,9 +37,9 @@ class ConversionListViewModel:BaseViewModel() {
 
     init{
         startLoadingRates()
-        val listener = Listener()
+        val onClickListener = OnClickListener()
         val valueWatcher = ValueWatcher()
-        conversionListAdapter.updateOnClickListener(listener)
+        conversionListAdapter.updateOnClickListener(onClickListener)
         conversionListAdapter.updateValueWatcher(valueWatcher)
     }
 
@@ -113,7 +113,7 @@ class ConversionListViewModel:BaseViewModel() {
         loadRates()
     }
 
-    inner class Listener : OnItemClickListener {
+    inner class OnClickListener : OnItemClickListener {
         override fun onItemClick(conversionRate: ConversionRate) {
             updateBase(conversionRate.currency, conversionRate.value)
             conversionListAdapter.scrollTo.set(0)

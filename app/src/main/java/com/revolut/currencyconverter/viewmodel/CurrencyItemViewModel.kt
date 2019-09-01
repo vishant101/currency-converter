@@ -25,7 +25,6 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
 
     private lateinit var onClickListener: View.OnClickListener
 
-
     fun bind(conversionRate: ConversionRate, position: Int, onClickListener: OnItemClickListener, valueWatcher: TextWatcher) {
         this.onClickListener = View.OnClickListener { onClickListener.onItemClick(conversionRate) }
         updateOnClickListener()
@@ -50,7 +49,6 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
         updateTextWatcher(textWatcher, position)
         updateValue(currencyValue)
     }
-
 
     private fun updateCurrencyShortName(shortName: String) {
         currencyShortName.text = shortName
@@ -78,18 +76,12 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
     }
 
     private fun getCurrencyFlag(currencyName: String): Int {
-        var currencyFlag: Int
-
         val resources = this.currencyFlag.context.resources
         val packageName = this.currencyFlag.context.packageName
         val flagName = IC+currencyName.toLowerCase()
 
-        currencyFlag = try {
+        return try {
             resources.getIdentifier(flagName, MIPMAP, packageName)
-        } catch (e: Exception) { 0 }
-
-        if (currencyFlag==0) currencyFlag = R.mipmap.ic_eur
-
-        return currencyFlag
+        } catch (e: Exception) { R.mipmap.ic_eur }
     }
 }

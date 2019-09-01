@@ -14,6 +14,5 @@ const val IC ="ic_"
 const val STRING = "string"
 const val MIPMAP = "mipmap"
 
-
+//PAYLOAD CHANGES
 const val VALUE_CHANGE = "VALUE_CHANGE"
-const val BASE_CHANGE = "BASE_CHANGE"

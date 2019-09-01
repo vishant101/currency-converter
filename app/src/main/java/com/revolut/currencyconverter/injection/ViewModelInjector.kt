@@ -1,9 +1,8 @@
 package com.revolut.currencyconverter.injection
 
-import dagger.Component
 import com.revolut.currencyconverter.viewmodel.ConversionListViewModel
 import com.revolut.currencyconverter.viewmodel.CurrencyItemViewModel
-
+import dagger.Component
 import javax.inject.Singleton
 
 /**
