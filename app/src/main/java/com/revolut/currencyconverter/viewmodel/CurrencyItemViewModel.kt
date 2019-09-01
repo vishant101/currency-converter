@@ -11,6 +11,7 @@ import com.revolut.currencyconverter.R
 import com.revolut.currencyconverter.interfaces.OnItemClickListener
 import com.revolut.currencyconverter.model.ConversionRate
 import com.revolut.currencyconverter.utils.DEFAULT_LONG_CURRENCY_PLACEHOLDER
+import com.revolut.currencyconverter.utils.IC
 import com.revolut.currencyconverter.utils.MIPMAP
 import com.revolut.currencyconverter.utils.STRING
 
@@ -45,6 +46,12 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
         if (currencyEditValue.text.toString() != value) currencyEditValue.setText(value)
     }
 
+    fun updateOnlyValue(currencyValue: Float, textWatcher: TextWatcher, position: Int) {
+        updateTextWatcher(textWatcher, position)
+        updateValue(currencyValue)
+    }
+
+
     private fun updateCurrencyShortName(shortName: String) {
         currencyShortName.text = shortName
     }
@@ -75,10 +82,10 @@ class CurrencyItemViewModel(itemView: View): RecyclerView.ViewHolder(itemView){
 
         val resources = this.currencyFlag.context.resources
         val packageName = this.currencyFlag.context.packageName
-        val drawableName = "ic_"+currencyName.substring(0,3).toLowerCase()
+        val flagName = IC+currencyName.toLowerCase()
 
         currencyFlag = try {
-            resources.getIdentifier(drawableName, MIPMAP, packageName)
+            resources.getIdentifier(flagName, MIPMAP, packageName)
         } catch (e: Exception) { 0 }
 
         if (currencyFlag==0) currencyFlag = R.mipmap.ic_eur

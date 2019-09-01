@@ -116,6 +116,7 @@ class ConversionListViewModel:BaseViewModel() {
     inner class Listener : OnItemClickListener {
         override fun onItemClick(conversionRate: ConversionRate) {
             updateBase(conversionRate.currency, conversionRate.value)
+            conversionListAdapter.scrollTo.set(0)
         }
     }
 
@@ -125,7 +126,9 @@ class ConversionListViewModel:BaseViewModel() {
 
         override fun afterTextChanged(newValue: Editable) {
             val rate =  if (newValue.isEmpty()) 0.0F else newValue.toString().toFloat()
+            conversionListAdapter.updateBaseValue(rate)
             updateBaseValue(rate)
+
         }
     }
 }
